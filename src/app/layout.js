@@ -6,6 +6,9 @@ import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/Navigation/Sidebar/AppSidebar";
 import AppNavbar from "@/components/Navigation/AppNavbar";
 import { cookies } from "next/headers";
+import { NextSSRPlugin } from "@uploadthing/react/next-ssr-plugin";
+import { ourFileRouter } from "./api/uploadthing/core";
+import { extractRouterConfig } from "uploadthing/server";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -31,9 +34,6 @@ export const metadata = {
     "Modern Web Application",
   ],
   author: "BeyonderSS",
-  viewport: "width=device-width, initial-scale=1.0",
-  themeColor: "#ffffff",
-  charset: "UTF-8",
 };
 
 
@@ -42,23 +42,26 @@ export default async function RootLayout({ children }) {
   const defaultOpen = cookieStore.get("sidebar:state")?.value === "true";
 
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-        <SidebarProvider defaultOpen={defaultOpen}>
+          <SidebarProvider defaultOpen={defaultOpen}>
 
 
 
 
-        <AppSidebar />
-      <main className="w-full">
-        <AppNavbar />
-        {children}
-      </main>        </SidebarProvider>
+            <AppSidebar />
+            <main className="w-full">
+              <AppNavbar />
+              <NextSSRPlugin
+                routerConfig={extractRouterConfig(ourFileRouter)}
+              />
+              {children}
+              <Logger />
+            </main>        </SidebarProvider>
         </ThemeProvider>
-        <Logger />
       </body>
     </html>
   );
