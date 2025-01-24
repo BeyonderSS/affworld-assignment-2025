@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { decodeToken } from "./lib/jwtUtils";
 
-const publicRoutes = ["/api/auth/login", "/api/auth/signup", "/api/auth/forgot-password"]; // Whitelisted public routes for unauthenticated users
+const publicRoutes = ["/api/auth/login", "/api/auth/signup", "/api/auth/forgot-password","/reset-password"]; // Whitelisted public routes for unauthenticated users
 const protectedRoutes = ["/login", "/signup"]; // Routes that should be blocked for authenticated users
 
 export async function middleware(request) {
