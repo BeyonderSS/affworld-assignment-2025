@@ -11,27 +11,29 @@ import {
 import { usePathname } from "next/navigation";
 
 const breadcrumbMap = {
-  "/dashboard": ["Home"],
-  "/dashboard/start-loop": ["Home", "New Loop"],
-  "/dashboard/start-loop?step=1": ["Home", "New Loop"],
-  "/dashboard/start-loop?step=2": ["Home", "New Loop", "Create Template"],
-  "/dashboard/start-loop?step=3": ["Home", "New Loop", "Preview"],
-  "/dashboard/your-loops": ["Home", "Your Loops"],
-  "/dashboard/your-loops/*": ["Home", "Your Loops"], // Wildcard for nested routes
-  "/dashboard/profile": ["Home", "Profile"],
-  "/dashboard/profile/manage-credentials": ["Home","Profile", "Manage Credential"],
+  "/": ["Feed Home"],
+  "/forgot-password": ["Forgot Password"],
+  "/login": ["Login"],
+  "/posts/create": ["Feed Home", "Create Post"],
+  "/posts/[slug]": ["Feed Home", "Post"],
+  "/profile": ["Manage Profile"],
+  "/reset-password": ["Reset Password"],
+  "/signup": ["Sign Up"],
+  "/task-manager": ["Task Manager"],
 };
 
 function resolveBreadcrumb(pathname) {
   for (const route in breadcrumbMap) {
-    if (route.includes("*") && pathname.startsWith(route.replace("/*", ""))) {
-      return breadcrumbMap[route];
+    // Handle dynamic routes like /post/[slug]
+    if (route.includes("[slug]") && pathname.startsWith(route.replace("[slug]", ""))) {
+      return [...breadcrumbMap[route.replace("[slug]", "")], "Post"];
     }
+    // Handle exact matches for other routes
     if (pathname === route) {
       return breadcrumbMap[route];
     }
   }
-  return ["Home"]; // Default fallback breadcrumb
+  return ["Feed Home"]; // Default fallback breadcrumb
 }
 
 function BreadcrumbProvider() {

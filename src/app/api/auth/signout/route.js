@@ -1,14 +1,20 @@
+import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
-export async function POST() {
+export async function GET() {
   // Clear the authToken cookie
-  const response = NextResponse.json({ success: true, message: "Logged out successfully." });
+  const cookieStore = cookies();
+  (await cookieStore).delete("authToken");
 
-  // Set the authToken cookie with an immediate expiry
-  response.cookies.set("authToken", "", { httpOnly: true, secure: true, sameSite: "strict", maxAge: 0 });
+  const response = NextResponse.json({ success: true, message: "Logged out successfully,You will be redirected in 1 second" });
 
-  // Add a refresh header to force a reload that triggers middleware
-  response.headers.set("Refresh", "0;url=/login");
+  // Wait 1 second and then refresh the route
+  setTimeout(() => {
+    // Trigger a route refresh by redirecting to the current route
+    response.headers.set("Location", "/");
+    response.status(302); // 302 Redirect status code
+  }, 1000);
+  response.headers.set("Refresh", "1;url=/"); // Delay for 1 second, then redirect to `/`
 
   return response;
 }

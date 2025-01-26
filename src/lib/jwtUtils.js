@@ -12,7 +12,6 @@ export async function encodeToken(payload) {
       .setExpirationTime('1d') // Set expiration time (1 day in this case)
       .sign(new TextEncoder().encode(process.env.JWT_SECRET)); // Sign with the secret
 
-    console.log("Token encoded successfully.");
     return jwt;
   } catch (error) {
     console.error("Error encoding token:", error);
@@ -26,7 +25,6 @@ export async function decodeToken(token) {
   try {
     // Verify and decode the JWT token
     const { payload } = await jwtVerify(token, new TextEncoder().encode(JWT_SECRET));
-    console.log("Token decoded successfully:", payload);
     return payload; // Return the decoded payload (user information, etc.)
   } catch (error) {
     console.error("Error decoding token:", error);

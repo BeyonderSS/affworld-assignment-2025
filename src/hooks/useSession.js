@@ -1,10 +1,12 @@
 import { getSession } from "@/app/actions/authActions"; // Import the serverless function to get the session
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react"; // Import React hooks
 
-// Custom hook to get session details in a client component
+// Custom hook to get session details and sign out
 export default function useSession() {
   const [sessionData, setSessionData] = useState(null); // State to store complete session data
   const [isAuthenticated, setIsAuthenticated] = useState(false); // State to track authentication status
+  const router = useRouter(); // Initialize router to trigger refresh after sign out
 
   useEffect(() => {
     // Function to check authentication and fetch session details
@@ -28,6 +30,32 @@ export default function useSession() {
     checkAuth(); // Call the authentication check function when the component mounts
   }, []); // Run the effect only once on component mount
 
-  // Return both the authentication status and the full session data
-  return { isAuthenticated, sessionData };
+  // Function to handle sign out
+  const signOut = async () => {
+    try {
+      const res = await fetch("/api/auth/signout", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      const result = await res.json();
+      if (result.success) {
+        // Clear session data locally
+        setSessionData(null);
+        setIsAuthenticated(false);
+
+        // Trigger page refresh after sign out
+        router.refresh();
+      } else {
+        console.error("Error during sign out:", result.message);
+      }
+    } catch (error) {
+      console.error("Error during sign out:", error);
+    }
+  };
+
+  // Return both the authentication status, session data, and signOut function
+  return { isAuthenticated, sessionData, signOut };
 }

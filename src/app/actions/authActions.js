@@ -7,7 +7,7 @@ import { cookies } from "next/headers"; // Next.js headers utility for cookies
 
 // Function to get session data in server components
 export const getSession = async () => {
-  const cookieStore = cookies(); // Get cookie store
+  const cookieStore =await cookies(); // Get cookie store
 
   try {
     // Connect to the database
@@ -18,7 +18,7 @@ export const getSession = async () => {
 
     if (!token) {
       console.warn("No token found in cookies.");
-      throw new Error("Authentication token is missing.");
+      return { error: "Authentication token is missing." }; // Return error message
     }
 
     // Decode the token to extract user information
@@ -26,7 +26,7 @@ export const getSession = async () => {
 
     if (!decoded || !decoded.userId) {
       console.warn("Token is invalid or user ID is missing in the decoded payload.");
-      throw new Error("Invalid or malformed authentication token.");
+      return { error: "Invalid or malformed authentication token." }; // Return error message
     }
 
     // Find the user in the database using the decoded userId
@@ -34,7 +34,7 @@ export const getSession = async () => {
 
     if (!user) {
       console.warn(`User with ID ${decoded.userId} not found.`);
-      throw new Error("User not found.");
+      return { error: "User not found." }; // Return error message
     }
 
     // Return user data
@@ -44,15 +44,7 @@ export const getSession = async () => {
     // Log detailed error information
     console.error("Error fetching session data:", error.message);
 
-    // Throw specific error messages based on the issue
-    if (error.message.includes("Authentication token")) {
-      throw new Error("Authentication required. Please log in.");
-    } else if (error.message.includes("User not found")) {
-      throw new Error("User does not exist. Please contact support.");
-    } else if (error.message.includes("Invalid or malformed")) {
-      throw new Error("Session token is invalid. Please log in again.");
-    } else {
-      throw new Error("An unexpected error occurred while fetching session data.");
-    }
+    // Return generic error message
+    return { error: "An unexpected error occurred while fetching session data." };
   }
 };

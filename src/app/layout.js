@@ -9,6 +9,7 @@ import { cookies } from "next/headers";
 import { NextSSRPlugin } from "@uploadthing/react/next-ssr-plugin";
 import { ourFileRouter } from "./api/uploadthing/core";
 import { extractRouterConfig } from "uploadthing/server";
+import { Toaster } from "@/components/ui/toaster";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -60,6 +61,8 @@ export default async function RootLayout({ children }) {
               />
               {children}
               <Logger />
+              <Toaster />
+
             </main>        </SidebarProvider>
         </ThemeProvider>
       </body>
